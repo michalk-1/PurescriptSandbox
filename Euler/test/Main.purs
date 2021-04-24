@@ -15,5 +15,6 @@ main :: Effect Unit
 main = do
   assert $ (mods 4 (3:2:Nil)) == true
   assert $ (mods 5 (3:2:Nil)) == false
+  assert $ sieveMods (2..9) 10 == (5:2:Nil)
   -- log $ show $ gaussFactorial 10
-  log $ show $ gaussFactorialProduct $ (pow 10 3)
+  log $ show $ gaussFactorial $ pow 10 1
