@@ -2,7 +2,7 @@ module GaussFactorialsProduct where
 
 import Prelude
 import Control.Alternative (guard)
-import Data.Foldable (product,or,foldl,foldr)
+import Data.Foldable (product,or,foldl)
 import Data.List ((..), (:), List(Nil), (!!))
 import Math (sqrt)
 import Data.Int (ceil,toNumber)
@@ -17,24 +17,31 @@ import Data.Int (ceil,toNumber)
 -- Also we define $G(n)=\prod_{i=1}^{n}g(i)$
 
 -- You are given $G(10)=
+--        23,044,331,52.,...
 --        23,044,331,520,000             ~~ 2*10^13
+--             1,668,595,712
+--             2,304,433,152
 --             2,147,483,647 -- 2^31 - 1 ~~ 2*10^9
 -- 9,223,372,036,854,775,807 -- 2^63 - 1 ~~ 9*10^18
 
 -- Find $G(10^8)$. Give your answer modulo $1\,000\,000\,007$.
--- 32-bit two's complement max intege       2  147  483  647.
+-- 32-bit two's complement max integer      2  147  483  647.
 
 
+mods :: Int -> List Int -> Boolean
 mods a xs = or $ do
     x <- xs
     pure $ mod a x == 0
 
 
+toRemove :: Int -> Int -> List Int -> Boolean
+toRemove x n ms = mods x ms || mod n x == 0
+
 sieve :: List Int -> Int -> List Int -> List Int
-sieve ys n ms = do
-    y <- ys
-    guard $ not (mods y ms) && mod 10 y /= 0
-    pure y
+sieve xs n ms = do
+    x <- xs
+    guard $ not $ toRemove x n ms
+    pure x
 
 
 collectMods :: Int -> (List Int -> Int -> List Int)
