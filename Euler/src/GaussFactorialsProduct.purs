@@ -2,9 +2,8 @@ module GaussFactorialsProduct where
 
 import Prelude
 import Control.Alternative (guard)
-import Data.Foldable (product,or,foldl)
-import Data.List ((..), (:), List(Nil))
-import Data.List
+import Data.Foldable (product,or,foldl,foldr)
+import Data.List ((..), (:), List(Nil), (!!))
 import Math (sqrt)
 import Data.Int (ceil,toNumber)
 -- Two integers are relatively prime if they share no common positive
@@ -17,7 +16,10 @@ import Data.Int (ceil,toNumber)
 
 -- Also we define $G(n)=\prod_{i=1}^{n}g(i)$
 
--- You are given $G(10)=23044331520000$.
+-- You are given $G(10)=
+--        23,044,331,520,000             ~~ 2*10^13
+--             2,147,483,647 -- 2^31 - 1 ~~ 2*10^9
+-- 9,223,372,036,854,775,807 -- 2^63 - 1 ~~ 9*10^18
 
 -- Find $G(10^8)$. Give your answer modulo $1\,000\,000\,007$.
 -- 32-bit two's complement max intege       2  147  483  647.
@@ -35,10 +37,15 @@ sieve ys n ms = do
     pure y
 
 
+collectMods :: Int -> (List Int -> Int -> List Int)
+collectMods n xs x =
+    case mod n x of
+        0 -> (x:xs)
+        _ -> xs
+
+
 sieveMods :: List Int -> Int -> List Int
-sieveMods xs n = foldl
-    (\xs x -> if mod n x == 0 then (x:xs) else xs)
-    Nil xs
+sieveMods xs n = foldl (collectMods n) Nil xs
 
 
 gaussFactorial :: Int -> Int
@@ -48,7 +55,7 @@ gaussFactorial n = product $ sieve
     (sieveMods (2..(ceil <<< sqrt <<< toNumber)(n-1)) n)
 
 
--- gaussFactorialProduct :: Int -> Int
--- gaussFactorialProduct n = product $ do
-    -- x <- (1..n)
-    -- pure $ gaussFactorial x
+gaussFactorials :: Int -> Int
+gaussFactorials n = product $ do
+    x <- (1..n)
+    pure $ gaussFactorial x
