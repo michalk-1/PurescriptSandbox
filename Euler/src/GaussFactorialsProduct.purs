@@ -2,10 +2,11 @@ module GaussFactorialsProduct where
 
 import Prelude
 import Control.Alternative (guard)
-import Data.Foldable (product,or,foldl)
+import Data.Foldable (product,or,foldl,foldr,class Foldable)
+import Data.Traversable (class Traversable)
 import Data.List ((..), (:), List(Nil), (!!))
 import Math (sqrt)
-import Data.Int (ceil,toNumber)
+import Data.Int (ceil,toNumber,fromNumber)
 -- Two integers are relatively prime if they share no common positive
 -- factors (divisors) except 1.
 
@@ -18,6 +19,7 @@ import Data.Int (ceil,toNumber)
 
 -- You are given $G(10)=
 --        23,044,331,52.,...
+--        23,044,331,520,000
 --        23,044,331,520,000             ~~ 2*10^13
 --             1,668,595,712
 --             2,304,433,152
@@ -26,7 +28,6 @@ import Data.Int (ceil,toNumber)
 
 -- Find $G(10^8)$. Give your answer modulo $1\,000\,000\,007$.
 -- 32-bit two's complement max integer      2  147  483  647.
-
 
 mods :: Int -> List Int -> Boolean
 mods a xs = or $ do
@@ -43,17 +44,14 @@ sieve xs n ms = do
     guard $ not $ toRemove x n ms
     pure x
 
-
 collectMods :: Int -> (List Int -> Int -> List Int)
 collectMods n xs x =
     case mod n x of
         0 -> (x:xs)
         _ -> xs
 
-
 sieveMods :: List Int -> Int -> List Int
 sieveMods xs n = foldl (collectMods n) Nil xs
-
 
 gaussFactorial :: Int -> Int
 gaussFactorial n = product $ sieve
@@ -61,8 +59,7 @@ gaussFactorial n = product $ sieve
     n
     (sieveMods (2..(ceil <<< sqrt <<< toNumber)(n-1)) n)
 
-
-gaussFactorials :: Int -> Int
-gaussFactorials n = product $ do
+gaussFactorials :: forall a. Semiring a => (Int -> a) -> Int -> a
+gaussFactorials convert n = product $ map convert $ do
     x <- (1..n)
     pure $ gaussFactorial x
