@@ -7,6 +7,8 @@ import Data.Traversable (class Traversable)
 import Data.List ((..), (:), List(Nil), (!!))
 import Math (sqrt)
 import Data.Int (ceil,toNumber,fromNumber)
+import Control.Monad (class Monad)
+import Control.MonadPlus (class MonadPlus)
 -- Two integers are relatively prime if they share no common positive
 -- factors (divisors) except 1.
 
@@ -29,28 +31,26 @@ import Data.Int (ceil,toNumber,fromNumber)
 -- Find $G(10^8)$. Give your answer modulo $1\,000\,000\,007$.
 -- 32-bit two's complement max integer      2  147  483  647.
 
-mods :: Int -> List Int -> Boolean
+mods :: forall m . Monad m => Foldable m => Int -> m Int -> Boolean
 mods a xs = or $ do
     x <- xs
     pure $ mod a x == 0
 
 
-toRemove :: Int -> Int -> List Int -> Boolean
+toRemove :: forall m . Monad m => Foldable m => Int -> Int -> m Int -> Boolean
 toRemove x n ms = mods x ms || mod n x == 0
 
-sieve :: List Int -> Int -> List Int -> List Int
+sieve :: forall m . MonadPlus m => Foldable m => m Int -> Int -> m Int -> m Int
 sieve xs n ms = do
     x <- xs
     guard $ not $ toRemove x n ms
     pure x
 
 collectMods :: Int -> (List Int -> Int -> List Int)
-collectMods n xs x =
-    case mod n x of
-        0 -> (x:xs)
-        _ -> xs
+collectMods n xs x | mod n x == 0 = (x:xs)
+collectMods _ xs _ = xs
 
-sieveMods :: List Int -> Int -> List Int
+sieveMods :: forall f . Foldable f => f Int -> Int -> List Int
 sieveMods xs n = foldl (collectMods n) Nil xs
 
 gaussFactorial :: Int -> Int
