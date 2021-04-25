@@ -37,6 +37,12 @@ mods a xs = or $ do
     pure $ mod a x == 0
 
 
+collectMods :: forall f . Foldable f => f Int -> Int -> List Int
+collectMods xs n = foldl acc Nil xs
+    where
+      acc xs x | mod n x == 0 = (x:xs)
+      acc xs _ = xs
+
 toRemove :: forall m . Monad m => Foldable m => Int -> Int -> m Int -> Boolean
 toRemove x n ms = mods x ms || mod n x == 0
 
@@ -46,18 +52,11 @@ sieve xs n ms = do
     guard $ not $ toRemove x n ms
     pure x
 
-collectMods :: Int -> (List Int -> Int -> List Int)
-collectMods n xs x | mod n x == 0 = (x:xs)
-collectMods _ xs _ = xs
-
-sieveMods :: forall f . Foldable f => f Int -> Int -> List Int
-sieveMods xs n = foldl (collectMods n) Nil xs
-
 gaussFactorial :: Int -> Int
 gaussFactorial n = product $ sieve
     (2..(n-1))
     n
-    (sieveMods (2..(ceil <<< sqrt <<< toNumber)(n-1)) n)
+    (collectMods (2..(ceil <<< sqrt <<< toNumber)(n-1)) n)
 
 gaussFactorials :: forall a. Semiring a => (Int -> a) -> Int -> a
 gaussFactorials convert n = product $ map convert $ do

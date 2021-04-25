@@ -19,8 +19,8 @@ main = runTest $ do
     test "mods" do
       Assert.equal true $ mods 4 (3:2:Nil)
       Assert.equal false $ mods 5 (3:2:Nil)
-    test "sieveModes" do
-      Assert.equal (5:2:Nil) $ sieveMods (2..9) 10
+    test "collectMods" do
+      Assert.equal (5:2:Nil) $ collectMods (2..9) 10
     test "gaussFactorial" do
       Assert.equal 189 $ gaussFactorial 10
     test "sandbox" do
