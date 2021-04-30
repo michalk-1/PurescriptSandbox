@@ -12,7 +12,6 @@ import Test.Unit.Main (runTest)
 import Test.Unit.Assert as Assert
 
 
-
 main :: Effect Unit
 main = runTest $ do
   suite "euler" do
