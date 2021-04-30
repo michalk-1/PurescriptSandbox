@@ -25,6 +25,6 @@ main = runTest $ do
       Assert.equal 189 $ gaussFactorial 10
     test "sandbox" do
       Assert.equal 50005000 $ sum (1..(pow 10 4))
-    test "gaussFactorials" do
-      Assert.equal 1668595712 $ gaussFactorials identity 9
-      Assert.equal 23044331520000.0 $ gaussFactorials toNumber 10
+    test "calculationsProduct" do
+      Assert.equal 1668595712 $ calculationsProduct identity gaussFactorial 9
+      Assert.equal 23044331520000.0 $ calculationsProduct toNumber gaussFactorial 10

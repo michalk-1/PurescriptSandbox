@@ -31,17 +31,16 @@ import Control.MonadPlus (class MonadPlus)
 -- Find $G(10^8)$. Give your answer modulo $1\,000\,000\,007$.
 -- 32-bit two's complement max integer      2  147  483  647.
 
-mods :: forall m . Monad m => Foldable m => Int -> m Int -> Boolean
-mods a xs = or $ do
-    x <- xs
-    pure $ mod a x == 0
-
-
 collectMods :: forall f . Foldable f => f Int -> Int -> List Int
 collectMods xs n = foldl acc Nil xs
     where
       acc xs x | mod n x == 0 = (x:xs)
       acc xs _ = xs
+
+mods :: forall m . Monad m => Foldable m => Int -> m Int -> Boolean
+mods a xs = or $ do
+    x <- xs
+    pure $ mod a x == 0
 
 toRemove :: forall m . Monad m => Foldable m => Int -> Int -> m Int -> Boolean
 toRemove x n ms = mods x ms || mod n x == 0
@@ -52,13 +51,18 @@ sieve xs n ms = do
     guard $ not $ toRemove x n ms
     pure x
 
+
+productFrom2 :: Int -> Int
+productFrom2 n = product $ (2..n)
+
 gaussFactorial :: Int -> Int
 gaussFactorial n = product $ sieve
     (2..(n-1))
     n
     (collectMods (2..(ceil <<< sqrt <<< toNumber)(n-1)) n)
 
-gaussFactorials :: forall a. Semiring a => (Int -> a) -> Int -> a
-gaussFactorials convert n = product $ map convert $ do
-    x <- (1..n)
-    pure $ gaussFactorial x
+calculationsProduct :: forall a. Semiring a => (Int -> a) -> (Int -> Int) -> Int -> a
+calculationsProduct convert calculation n =
+    product $ map convert $ do
+        x <- (2..n)
+        pure $ calculation x

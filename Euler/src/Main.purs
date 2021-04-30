@@ -11,7 +11,7 @@ import Effect.Console (log)
 main :: Effect Unit
 main = do
   -- the target is to compute G(10^8) % (10^9 + 7)
-  log $ show $ gaussFactorials toNumber 18
+  log $ show $ calculationsProduct toNumber gaussFactorial 18
   -- higher numbers exceed the IEEE float32 range of 2^127
-  log $ show $ gaussFactorials toNumber (pow 10 3)
+  log $ show $ calculationsProduct toNumber gaussFactorial (pow 10 3)
   -- 10^4 exceeds maximum callstack after 45 seconds
