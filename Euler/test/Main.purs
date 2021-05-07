@@ -27,3 +27,8 @@ main = runTest $ do
     test "calculationsProduct" do
       Assert.equal 1668595712 $ calculationsProduct identity gaussFactorial 9
       Assert.equal 23044331520000.0 $ calculationsProduct toNumber gaussFactorial 10
+    test "moduloProduct" do
+      Assert.equal 100 $ moduloProduct 101 [2, 2, 5, 5]
+      Assert.equal 0 $ moduloProduct 100 [2, 2, 5, 5]
+      Assert.equal 1 $ moduloProduct 99 [2, 2, 5, 5]
+      Assert.equal 9 $ moduloProduct 13 [2, 2, 5, 5]

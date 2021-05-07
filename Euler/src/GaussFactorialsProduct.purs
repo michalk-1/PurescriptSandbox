@@ -59,8 +59,17 @@ gaussFactorial n = product $ sieve
     n
     (collectMods (2..(ceil <<< sqrt <<< toNumber)(n-1)) n)
 
+calculationsApplication ::
+    forall a. Semiring a =>
+    (Array a -> a) -> (Int -> a) -> (Int -> Int) -> Int -> a
+calculationsApplication application convert calculation n =
+    application $ map (convert <<< calculation) (range 2 n)
+
+
 calculationsProduct :: forall a. Semiring a => (Int -> a) -> (Int -> Int) -> Int -> a
 calculationsProduct convert calculation n =
-    product $ map convert $ do
-        x <- range 2 n
-        pure $ calculation x
+    calculationsApplication product convert calculation n
+
+
+moduloProduct :: Int -> Array Int -> Int
+moduloProduct n xs = mod (product $ map ((flip mod) n) xs) n
