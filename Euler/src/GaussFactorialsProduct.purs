@@ -11,6 +11,7 @@ import Math (sqrt)
 import Data.Int (ceil,toNumber,fromNumber)
 import Control.Monad (class Monad)
 import Control.MonadPlus (class MonadPlus)
+import Data.Filterable (class Filterable, filter)
 import Data.Ord (class Ord)
 -- Two integers are relatively prime if they share no common positive
 -- factors (divisors) except 1.
@@ -45,11 +46,8 @@ mods a xs = or $ map (\x -> mod a x == 0) xs
 toRemove :: forall m . Traversable m => Int -> Int -> m Int -> Boolean
 toRemove x n ms = mods x ms || mod n x == 0
 
-sieve :: forall m t. MonadPlus m => Traversable t => m Int -> Int -> t Int -> m Int
-sieve xs n ms = do
-    x <- xs
-    guard $ not $ toRemove x n ms
-    pure x
+sieve :: forall f t. Filterable f => Traversable t => f Int -> Int -> t Int -> f Int
+sieve xs n ms = filter (\x -> not $ toRemove x n ms) xs
 
 applyFrom2 :: (Array Int -> Int) -> Int -> Int
 applyFrom2 apply n = apply $ range 2 n
@@ -57,7 +55,7 @@ applyFrom2 apply n = apply $ range 2 n
 productFrom2 :: Int -> Int
 productFrom2 n = applyFrom2 product n
 
-gaussApplication :: (Array Int -> Int) -> Int -> Int
+gaussApplication :: forall a. (Array Int -> a) -> Int -> a
 gaussApplication apply n = apply $ sieve
     (range 2 (n-1))
     n
@@ -69,8 +67,8 @@ gaussFactorial n = gaussApplication product n
 
 calculationsApplication :: forall a. EuclideanRing a =>
     (Array a -> a) -> (Int -> a) -> (Int -> Int) -> Int -> a
-
-calculationsApplication apply convert calculation n =
+calculationsApplication
+    apply convert calculation n =
     apply $ map (convert <<< calculation) (range 2 n)
 
 
@@ -79,7 +77,6 @@ calculationsProduct convert calculation n =
     calculationsApplication product convert calculation n
 
 
--- (moduloProduct 1000000007)
 moduloProduct :: forall f a. Traversable f => Ord a => EuclideanRing a => a -> f a -> a
 moduloProduct n xs = foldl fn one xs
-    where fn a x = ((a `mod` n) * (x `mod` n)) `mod` n
+    where fn a x = (a * (x `mod` n)) `mod` n

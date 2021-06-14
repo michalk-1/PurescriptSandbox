@@ -8,6 +8,7 @@ You can edit this file as you like.
   , "console"
   , "control"
   , "effect"
+  , "filterable"
   , "foldable-traversable"
   , "integers"
   , "lists"

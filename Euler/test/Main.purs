@@ -1,6 +1,7 @@
 module Test.Main where
 
-import GaussFactorialsProduct
+import GaussFactorialsProduct as GFP
+import Sieve (sieve)
 import Data.Foldable (sum)
 import Data.Int (pow,toNumber)
 import Data.List ((..), (:), List(Nil))
@@ -14,21 +15,24 @@ import Test.Unit.Assert as Assert
 
 main :: Effect Unit
 main = runTest $ do
-  suite "euler" do
+  suite "GaussFactorialsProduct" do
     test "mods" do
-      Assert.equal true $ mods 4 (3:2:Nil)
-      Assert.equal false $ mods 5 (3:2:Nil)
+      Assert.equal true $ GFP.mods 4 (3:2:Nil)
+      Assert.equal false $ GFP.mods 5 (3:2:Nil)
     test "collectMods" do
-      Assert.equal (5:2:Nil) $ collectMods (2..9) 10
+      Assert.equal (5:2:Nil) $ GFP.collectMods (2..9) 10
     test "gaussFactorial" do
-      Assert.equal 189 $ gaussFactorial 10
+      Assert.equal 189 $ GFP.gaussFactorial 10
     test "sandbox" do
       Assert.equal 50005000 $ sum (1..(pow 10 4))
     test "calculationsProduct" do
-      Assert.equal 1668595712 $ calculationsProduct identity gaussFactorial 9
-      Assert.equal 23044331520000.0 $ calculationsProduct toNumber gaussFactorial 10
+      Assert.equal 1668595712 $ GFP.calculationsProduct identity GFP.gaussFactorial 9
+      Assert.equal 23044331520000.0 $ GFP.calculationsProduct toNumber GFP.gaussFactorial 10
     test "moduloProduct" do
-      Assert.equal 100 $ moduloProduct 101 [2, 2, 5, 5]
-      Assert.equal 0 $ moduloProduct 100 [2, 2, 5, 5]
-      Assert.equal 1 $ moduloProduct 99 [2, 2, 5, 5]
-      Assert.equal 9 $ moduloProduct 13 [2, 2, 5, 5]
+      Assert.equal 100 $ GFP.moduloProduct 101 [2, 2, 5, 5]
+      Assert.equal 0 $ GFP.moduloProduct 100 [2, 2, 5, 5]
+      Assert.equal 1 $ GFP.moduloProduct 99 [2, 2, 5, 5]
+      Assert.equal 9 $ GFP.moduloProduct 13 [2, 2, 5, 5]
+  suite "Sieve" do
+    test "sieve" do
+      Assert.equal true $ sieve
